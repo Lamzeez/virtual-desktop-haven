@@ -1,7 +1,7 @@
 
-import Desktop from "@/components/Desktop";
 import { ArrowDown, Code, Github, Terminal, MessageSquare, FileCode, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -14,7 +14,7 @@ const Index = () => {
             A powerful web-based programming environment that simulates a desktop operating system for developers.
           </p>
           <div className="flex justify-center gap-4 mb-10">
-            <Button variant="outline" className="gap-2 border-white/20 hover:border-white/50">
+            <Button variant="default" className="gap-2 bg-white text-desktop-bg hover:bg-gray-200">
               <Github className="w-5 h-5" />
               <span>View on GitHub</span>
             </Button>
@@ -38,45 +38,57 @@ const Index = () => {
               {
                 icon: <MessageSquare className="w-12 h-12 text-desktop-icon-messaging" />,
                 title: "Messaging System",
-                desc: "Real-time messaging platform with publish/subscribe patterns"
+                desc: "Real-time messaging platform with publish/subscribe patterns",
+                path: "/apps/messaging"
               },
               {
                 icon: <FileCode className="w-12 h-12 text-desktop-icon-xml" />,
                 title: "XML Transformer",
-                desc: "Transform XML content using XSLT stylesheets"
+                desc: "Transform XML content using XSLT stylesheets",
+                path: "/apps/xml-transformer"
               },
               {
                 icon: <FileText className="w-12 h-12 text-desktop-icon-java" />,
                 title: "Java XML Parser",
-                desc: "Parse and validate XML files with Java"
+                desc: "Parse and validate XML files with Java",
+                path: "/apps/java-xml"
               },
               {
                 icon: <Terminal className="w-12 h-12 text-desktop-icon-api" />,
                 title: "API Tools",
-                desc: "Execute API requests and custom bash scripts"
+                desc: "Execute API requests and custom bash scripts",
+                path: "/apps/api"
               }
             ].map((feature, index) => (
-              <div key={index} className="bg-desktop-window rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all">
-                <div className="flex justify-center mb-4">
-                  {feature.icon}
+              <Link to={feature.path} key={index} className="block">
+                <div className="bg-desktop-window rounded-xl p-6 border border-white/10 hover:border-white/30 hover:scale-105 transition-all cursor-pointer h-full">
+                  <div className="flex justify-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-white text-center">{feature.title}</h3>
+                  <p className="text-gray-300 text-center">{feature.desc}</p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-white text-center">{feature.title}</h3>
-                <p className="text-gray-300 text-center">{feature.desc}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Desktop Environment */}
-      <section className="flex-grow bg-desktop-bg relative">
-        <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold mb-6 text-white">Launch Desktop Environment</h2>
-          <p className="text-gray-300 mb-8">
-            Click on any app icon to open the corresponding application in our simulated desktop environment.
-          </p>
+      {/* About Section */}
+      <section className="py-16 bg-desktop-bg">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center text-white">About ProgDesk</h2>
+          <div className="max-w-3xl mx-auto bg-desktop-window rounded-xl p-8 border border-white/10">
+            <p className="text-gray-200 mb-4">
+              ProgDesk is designed for developers who need a unified interface for common programming tasks.
+              Each application provides specialized tools for different aspects of software development.
+            </p>
+            <p className="text-gray-200">
+              Whether you're working with messaging systems, XML processing, or API integration,
+              ProgDesk offers a comprehensive suite of tools in a familiar desktop-like interface.
+            </p>
+          </div>
         </div>
-        <Desktop />
       </section>
 
       {/* Footer */}
