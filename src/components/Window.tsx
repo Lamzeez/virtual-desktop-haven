@@ -1,5 +1,6 @@
 
 import React, { useRef, useState, useEffect } from 'react';
+import { X, Minus, Square } from 'lucide-react';
 
 interface WindowProps {
   id: string;
@@ -10,6 +11,8 @@ interface WindowProps {
   onClick: () => void;
   position: { x: number, y: number };
   onUpdatePosition: (x: number, y: number) => void;
+  iconColor?: string;
+  icon?: React.ReactNode;
 }
 
 const Window: React.FC<WindowProps> = ({ 
@@ -20,7 +23,9 @@ const Window: React.FC<WindowProps> = ({
   onClose, 
   onClick,
   position,
-  onUpdatePosition
+  onUpdatePosition,
+  iconColor,
+  icon
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -29,7 +34,8 @@ const Window: React.FC<WindowProps> = ({
   // Start dragging
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only drag from the header
-    if ((e.target as HTMLElement).closest('.window-body')) {
+    if ((e.target as HTMLElement).closest('.window-body') || 
+        (e.target as HTMLElement).closest('.window-controls')) {
       return;
     }
     
@@ -90,26 +96,41 @@ const Window: React.FC<WindowProps> = ({
       onClick={onClick}
     >
       <div 
-        className="window-header cursor-move select-none"
+        className="window-header cursor-move select-none flex items-center justify-between px-4 py-2 bg-desktop-window border-b border-white/10"
         onMouseDown={handleMouseDown}
       >
-        <div className="window-controls">
+        <div className="window-controls flex items-center gap-2">
           <div 
-            className="window-control bg-red-500 cursor-pointer hover:bg-red-600" 
+            className="window-control bg-red-500 cursor-pointer hover:bg-red-600 w-3 h-3 rounded-full flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
               onClose();
             }}
-          />
-          <div className="window-control bg-yellow-500" />
-          <div className="window-control bg-green-500" />
+          >
+            <X className="w-2 h-2 text-white opacity-0 group-hover:opacity-100" />
+          </div>
+          <div className="window-control bg-yellow-500 hover:bg-yellow-600 w-3 h-3 rounded-full">
+            <Minus className="w-2 h-2 text-white opacity-0 group-hover:opacity-100" />
+          </div>
+          <div className="window-control bg-green-500 hover:bg-green-600 w-3 h-3 rounded-full">
+            <Square className="w-2 h-2 text-white opacity-0 group-hover:opacity-100" />
+          </div>
         </div>
-        <div className="window-title">{title}</div>
+        
+        <div className="window-title flex items-center gap-2 text-white">
+          {icon && (
+            <div className={`${iconColor} p-1 rounded-md w-6 h-6 flex items-center justify-center`}>
+              {React.cloneElement(icon as React.ReactElement, { className: "w-4 h-4" })}
+            </div>
+          )}
+          <span className="font-medium">{title}</span>
+        </div>
+        
         <div className="w-16">
           {/* Spacer to center the title */}
         </div>
       </div>
-      <div className="window-body">
+      <div className="window-body p-4 h-[calc(100%-38px)] overflow-auto bg-desktop-window">
         {children}
       </div>
     </div>

@@ -5,6 +5,8 @@ interface TaskbarItem {
   id: string;
   name: string;
   isActive: boolean;
+  icon?: React.ReactNode;
+  color?: string;
 }
 
 interface TaskbarProps {
@@ -20,7 +22,7 @@ const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onWindowSelect }) => {
           <div 
             key={window.id}
             className={`
-              px-4 py-2 rounded-md cursor-pointer transition-all duration-200
+              px-3 py-1.5 rounded-md cursor-pointer transition-all duration-200 flex items-center gap-2
               ${window.isActive 
                 ? 'bg-white/20 text-white' 
                 : 'bg-white/5 text-gray-300 hover:bg-white/10'
@@ -28,7 +30,12 @@ const Taskbar: React.FC<TaskbarProps> = ({ openWindows, onWindowSelect }) => {
             `}
             onClick={() => onWindowSelect(window.id)}
           >
-            {window.name}
+            {window.icon && (
+              <div className={`${window.color} p-1 rounded-md w-6 h-6 flex items-center justify-center`}>
+                {React.cloneElement(window.icon as React.ReactElement, { className: "w-4 h-4" })}
+              </div>
+            )}
+            <span className="text-sm font-medium">{window.name}</span>
           </div>
         ))}
       </div>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MessageSquare, FileCode, FileText, AppWindow } from 'lucide-react';
+import { MessageSquare, FileCode, FileText, Terminal } from 'lucide-react';
 import Window from './Window';
 import MessagingApp from './apps/MessagingApp';
 import XmlTransformerApp from './apps/XmlTransformerApp';
@@ -15,6 +15,7 @@ interface DesktopIcon {
   icon: React.ReactNode;
   color: string;
   component: React.ReactNode;
+  description: string;
 }
 
 const Desktop: React.FC = () => {
@@ -27,30 +28,34 @@ const Desktop: React.FC = () => {
     {
       id: 'messaging',
       name: 'Messaging App',
-      icon: <MessageSquare className="w-12 h-12" />,
+      icon: <MessageSquare className="w-10 h-10" />,
       color: 'bg-desktop-icon-messaging',
-      component: <MessagingApp />
+      component: <MessagingApp />,
+      description: 'Messaging system with RabbitMQ integration'
     },
     {
       id: 'xml-transformer',
       name: 'XML Transformer',
-      icon: <FileCode className="w-12 h-12" />,
+      icon: <FileCode className="w-10 h-10" />,
       color: 'bg-desktop-icon-xml',
-      component: <XmlTransformerApp />
+      component: <XmlTransformerApp />,
+      description: 'Transform XML with XSLT stylesheets'
     },
     {
       id: 'java-xml',
       name: 'Java XML Parser',
-      icon: <FileText className="w-12 h-12" />,
+      icon: <FileText className="w-10 h-10" />,
       color: 'bg-desktop-icon-java',
-      component: <JavaXmlApp />
+      component: <JavaXmlApp />,
+      description: 'Parse XML files using Java'
     },
     {
       id: 'api',
       name: 'API Tool',
-      icon: <AppWindow className="w-12 h-12" />,
+      icon: <Terminal className="w-10 h-10" />,
       color: 'bg-desktop-icon-api',
-      component: <ApiApp />
+      component: <ApiApp />,
+      description: 'Execute API requests and Bash scripts'
     }
   ];
 
@@ -92,18 +97,19 @@ const Desktop: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-desktop-bg overflow-hidden flex flex-col">
-      <div className="flex-1 p-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 content-start">
+    <div className="relative w-full h-[600px] bg-desktop-bg overflow-hidden flex flex-col rounded-xl shadow-2xl border border-white/5">
+      <div className="flex-1 p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 content-start">
         {desktopIcons.map(icon => (
           <div 
             key={icon.id} 
-            className="desktop-icon"
+            className="desktop-icon hover:scale-105 transition-transform"
             onClick={() => handleOpenWindow(icon.id)}
           >
-            <div className={`desktop-icon-wrapper ${icon.color}`}>
+            <div className={`desktop-icon-wrapper ${icon.color} rounded-2xl flex items-center justify-center shadow-lg`}>
               {icon.icon}
             </div>
-            <span className="text-white text-xs text-center font-medium">{icon.name}</span>
+            <span className="text-white text-sm font-medium mt-2">{icon.name}</span>
+            <span className="text-gray-400 text-xs">{icon.description}</span>
           </div>
         ))}
       </div>
@@ -123,6 +129,8 @@ const Desktop: React.FC = () => {
             onClick={() => handleWindowClick(windowId)}
             position={position}
             onUpdatePosition={(x, y) => handleUpdatePosition(windowId, x, y)}
+            iconColor={app.color}
+            icon={app.icon}
           >
             {app.component}
           </Window>
@@ -133,7 +141,9 @@ const Desktop: React.FC = () => {
         openWindows={openWindows.map(id => ({
           id,
           name: desktopIcons.find(icon => icon.id === id)?.name || '',
-          isActive: id === activeWindow
+          isActive: id === activeWindow,
+          icon: desktopIcons.find(icon => icon.id === id)?.icon,
+          color: desktopIcons.find(icon => icon.id === id)?.color || ''
         }))}
         onWindowSelect={handleWindowClick}
       />
