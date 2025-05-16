@@ -1,0 +1,144 @@
+
+import React, { useState } from 'react';
+import { MessageSquare, FileCode, FileText, AppWindow } from 'lucide-react';
+import Window from './Window';
+import MessagingApp from './apps/MessagingApp';
+import XmlTransformerApp from './apps/XmlTransformerApp';
+import JavaXmlApp from './apps/JavaXmlApp';
+import ApiApp from './apps/ApiApp';
+import Taskbar from './Taskbar';
+import { useToast } from '@/hooks/use-toast';
+
+interface DesktopIcon {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  color: string;
+  component: React.ReactNode;
+}
+
+const Desktop: React.FC = () => {
+  const { toast } = useToast();
+  const [openWindows, setOpenWindows] = useState<string[]>([]);
+  const [activeWindow, setActiveWindow] = useState<string | null>(null);
+  const [windowPositions, setWindowPositions] = useState<Record<string, { x: number, y: number }>>({});
+
+  const desktopIcons: DesktopIcon[] = [
+    {
+      id: 'messaging',
+      name: 'Messaging App',
+      icon: <MessageSquare className="w-12 h-12" />,
+      color: 'bg-desktop-icon-messaging',
+      component: <MessagingApp />
+    },
+    {
+      id: 'xml-transformer',
+      name: 'XML Transformer',
+      icon: <FileCode className="w-12 h-12" />,
+      color: 'bg-desktop-icon-xml',
+      component: <XmlTransformerApp />
+    },
+    {
+      id: 'java-xml',
+      name: 'Java XML Parser',
+      icon: <FileText className="w-12 h-12" />,
+      color: 'bg-desktop-icon-java',
+      component: <JavaXmlApp />
+    },
+    {
+      id: 'api',
+      name: 'API Tool',
+      icon: <AppWindow className="w-12 h-12" />,
+      color: 'bg-desktop-icon-api',
+      component: <ApiApp />
+    }
+  ];
+
+  const handleOpenWindow = (id: string) => {
+    if (!openWindows.includes(id)) {
+      setOpenWindows(prev => [...prev, id]);
+      
+      // Set a slightly random position for new windows
+      const randomOffset = Math.floor(Math.random() * 50);
+      setWindowPositions(prev => ({
+        ...prev,
+        [id]: { x: 100 + randomOffset, y: 80 + randomOffset }
+      }));
+      
+      toast({
+        title: "Opening Application",
+        description: `Launching ${desktopIcons.find(icon => icon.id === id)?.name}`,
+      });
+    }
+    setActiveWindow(id);
+  };
+
+  const handleCloseWindow = (id: string) => {
+    setOpenWindows(prev => prev.filter(windowId => windowId !== id));
+    if (activeWindow === id) {
+      setActiveWindow(openWindows.filter(windowId => windowId !== id)[0] || null);
+    }
+  };
+
+  const handleWindowClick = (id: string) => {
+    setActiveWindow(id);
+  };
+
+  const handleUpdatePosition = (id: string, x: number, y: number) => {
+    setWindowPositions(prev => ({
+      ...prev,
+      [id]: { x, y }
+    }));
+  };
+
+  return (
+    <div className="relative w-full h-screen bg-desktop-bg overflow-hidden flex flex-col">
+      <div className="flex-1 p-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 content-start">
+        {desktopIcons.map(icon => (
+          <div 
+            key={icon.id} 
+            className="desktop-icon"
+            onClick={() => handleOpenWindow(icon.id)}
+          >
+            <div className={`desktop-icon-wrapper ${icon.color}`}>
+              {icon.icon}
+            </div>
+            <span className="text-white text-xs text-center font-medium">{icon.name}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Application Windows */}
+      {openWindows.map(windowId => {
+        const app = desktopIcons.find(icon => icon.id === windowId);
+        const position = windowPositions[windowId] || { x: 100, y: 80 };
+        
+        return app ? (
+          <Window
+            key={windowId}
+            id={windowId}
+            title={app.name}
+            isActive={activeWindow === windowId}
+            onClose={() => handleCloseWindow(windowId)}
+            onClick={() => handleWindowClick(windowId)}
+            position={position}
+            onUpdatePosition={(x, y) => handleUpdatePosition(windowId, x, y)}
+          >
+            {app.component}
+          </Window>
+        ) : null;
+      })}
+
+      <Taskbar 
+        openWindows={openWindows.map(id => ({
+          id,
+          name: desktopIcons.find(icon => icon.id === id)?.name || '',
+          isActive: id === activeWindow
+        }))}
+        onWindowSelect={handleWindowClick}
+      />
+    </div>
+  );
+};
+
+export default Desktop;
