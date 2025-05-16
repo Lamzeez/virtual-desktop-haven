@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Terminal } from "lucide-react";
 
 const ApiApp: React.FC = () => {
   const { toast } = useToast();
@@ -191,10 +192,10 @@ Authorization: Bearer YOUR_TOKEN"
               <Textarea
                 value={requestBody}
                 onChange={(e) => setRequestBody(e.target.value)}
-                placeholder="{
-  \"name\": \"John Doe\",
-  \"email\": \"john@example.com\"
-}"
+                placeholder={`{
+  "name": "John Doe",
+  "email": "john@example.com"
+}`}
                 className="h-20 bg-black/20 border-white/20"
               />
             </div>
@@ -214,7 +215,7 @@ Authorization: Bearer YOUR_TOKEN"
             {isLoading ? (
               <div className="animate-pulse text-green-500">
                 $ {method.toLowerCase()} {apiUrl}<br/>
-                > Executing request...
+                &gt; Executing request...
               </div>
             ) : output ? (
               <pre className="text-green-500 whitespace-pre-wrap">{output}</pre>
@@ -263,9 +264,9 @@ Authorization: Bearer YOUR_TOKEN"
             {isLoading ? (
               <div className="animate-pulse text-green-500">
                 $ bash script.sh<br/>
-                > Executing bash script...<br/>
+                &gt; Executing bash script...<br/>
                 {bashScript.split('\n').map((line, i) => (
-                  <span key={i}>> {line}<br/></span>
+                  <span key={i}>&gt; {line}<br/></span>
                 ))}
               </div>
             ) : output ? (
